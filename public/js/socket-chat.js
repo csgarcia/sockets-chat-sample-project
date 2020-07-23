@@ -19,34 +19,27 @@ socket.on('connect', function() {
     console.log('Conectado al servidor');
     // first: add person to a chat
     socket.emit('enterChatEvent', user, function(response) {
-        console.log('Users connected: ', response);
+        // console.log('Users connected: ', response);
+        renderUsers(response); // this function is declared on socket-chat-jquery
     });
 });
 
 // escuchar
 socket.on('disconnect', function() {
-
     console.log('Perdimos conexión con el servidor');
-
 });
 
-// Send message
-// socket.emit('createMessageEvent', {
-//     usuario: 'Fernando',
-//     mensaje: 'Hola Mundo'
-// }, function(resp) {
-//     console.log('respuesta server: ', resp);
-// });
-
 // Escuchar información
-socket.on('createMessageEvent', function(mensaje) {
-    console.log('Servidor:', mensaje);
+socket.on('createMessageEvent', function(message) {
+    // console.log('Servidor:', message);
+    renderMessages(message);
 });
 
 // Listen user changes
 // listen when users connected array has changes on connect or disconnect
-socket.on('peopleListEvent', function(mensaje) {
-    console.log(mensaje);
+socket.on('peopleListEvent', function(message) {
+    // console.log(mensaje);
+    renderUsers(message); // this function is declared on socket-chat-jquery
 });
 
 // private messages

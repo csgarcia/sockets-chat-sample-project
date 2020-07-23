@@ -27,7 +27,7 @@ io.on('connection', (client) => {
         callback(users.getPeopleConnectedByRoom(data.room));
     });
 
-    client.on('createMessageEvent', (data) => {
+    client.on('createMessageEvent', (data, callback) => {
         let clientSocketId = client.id;
         let person = users.getPerson(clientSocketId);
         let message = createMessage(person.name, data.message);
@@ -35,6 +35,8 @@ io.on('connection', (client) => {
         client.broadcast
             .to(person.room) //only users on the same room
             .emit('createMessageEvent', message);
+
+        callback(message);
     });
 
     client.on('disconnect', () => {
