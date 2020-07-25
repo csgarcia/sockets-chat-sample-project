@@ -24,22 +24,55 @@ function renderUsers(people) {
         html += '    <a data-id="' + currentPerson.id + '" href="javascript:void(0)"><img src="assets/images/users/1.jpg" alt="user-img" class="img-circle"><span>' + currentPerson.name + '<small class="text-success">online</small></span></a>';
         html += '</li>';
     }
-
     divUsers.html(html);
 }
 
 // function to show messages on screen
-function renderMessages(message) {
+function renderMessages(message, isMyMessage) {
     var html = '';
-    html += '<li class="animated fadeIn">';
-    html += '    <div class="chat-img"><img src="assets/images/users/1.jpg" alt="user" /></div>';
-    html += '    <div class="chat-content">';
-    html += '        <h5>' + message.name + '</h5>';
-    html += '        <div class="box bg-light-info">' + message.message + '</div>';
-    html += '    </div>';
-    html += '    <div class="chat-time">10:56 am</div>';
-    html += '</li>';
+    var date = new Date(message.date);
+    var hour = date.getHours() + ':' + date.getMinutes();
+    var isAdminMessage = message.name === 'Admin';
+    var adminClass = 'info';
+    if (isAdminMessage) {
+        adminClass = 'danger';
+    }
+    if (isMyMessage) {
+        html += '<li class="reverse">';
+        html += '    <div class="chat-content">';
+        html += '        <h5>' + message.name + '</h5>';
+        html += '        <div class="box bg-light-inverse">' + message.message + '</div>';
+        html += '    </div>';
+        html += '    <div class="chat-img"><img src="assets/images/users/5.jpg" alt="user" /></div>';
+        html += '    <div class="chat-time">' + hour + '</div>';
+        html += '</li>';
+    } else {
+        html += '<li class="animated fadeIn">';
+        if (!isAdminMessage) {
+            html += '    <div class="chat-img"><img src="assets/images/users/1.jpg" alt="user" /></div>';
+        }
+        html += '    <div class="chat-content">';
+        html += '        <h5>' + message.name + '</h5>';
+        html += '        <div class="box bg-light-' + adminClass + '">' + message.message + '</div>';
+        html += '    </div>';
+        html += '    <div class="chat-time">' + hour + '</div>';
+        html += '</li>';
+    }
     divChatbox.append(html);
+}
+
+function scrollBottom() {
+    // selectors
+    var newMessage = divChatbox.children('li:last-child');
+    // heights
+    var clientHeight = divChatbox.prop('clientHeight');
+    var scrollTop = divChatbox.prop('scrollTop');
+    var scrollHeight = divChatbox.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight() || 0;
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+        divChatbox.scrollTop(scrollHeight);
+    }
 }
 
 // jQuery listeners
@@ -63,6 +96,7 @@ sendForm.submit(function(event) {
         message: txtMessage.val()
     }, function(message) {
         txtMessage.val('').focus();
-        renderMessages(message);
+        renderMessages(message, true);
+        scrollBottom();
     });
 });

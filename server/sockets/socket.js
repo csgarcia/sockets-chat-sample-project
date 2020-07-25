@@ -24,6 +24,9 @@ io.on('connection', (client) => {
         client.broadcast
             .to(data.room) //only users on the same room
             .emit('peopleListEvent', users.getPeopleConnectedByRoom(data.room));
+        client.broadcast
+            .to(data.room) //Message that someone joined the chat
+            .emit('createMessageEvent', createMessage('Admin', `${data.name} se unió`));
         callback(users.getPeopleConnectedByRoom(data.room));
     });
 
@@ -35,7 +38,6 @@ io.on('connection', (client) => {
         client.broadcast
             .to(person.room) //only users on the same room
             .emit('createMessageEvent', message);
-
         callback(message);
     });
 
